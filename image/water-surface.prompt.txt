@@ -1,0 +1,6 @@
+Asset: water-surface.png
+Generated with: built-in image_gen tool, 2026-09-07
+Use: Local material for the style1 -> style2 WebGL2 water transition.
+
+Prompt:
+Create a production texture asset for a WebGL liquid screen transition. One single image, landscape 16:9, fills the ENTIRE image with deep saturated cobalt sapphire blue WATER viewed very close from slightly underwater looking toward a rolling turbulent water surface. Match highly detailed cinematic stylized realistic anime game water VFX: broad thick glasslike overlapping folds and rolling liquid sheets, large organic flowing irregular wave forms, physically refracted azure and cyan sunlight concentrating into thin white-blue specular ribbons at crests; rich dark ultramarine valleys and transparent electric blue ridges. The water is volumetric and thick, not a flat pool floor caustic pattern. Moderate fine detail, clear large scale fluid structure across the whole frame. No horizon, no sky, no land, no people, no text, no borders, no UI, no bubbles (added procedurally), no foam, no neon lightning or vein network. No central subject. Flowing diagonal folds extend beyond all four edges. Relatively even lighting distribution with brilliant specular streaks and dark blue recesses. This will be animated with a GPU flow field so do not include motion blur. High resolution water surface material texture.

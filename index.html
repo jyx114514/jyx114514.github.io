@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<html lang="zh-CN" data-page-node-id="DoCRGXluKkuZQxGrgBwa6t">
+<head data-page-node-id="mXvwUrX3fBRkHPlbv0JEqy">
+<meta charset="utf-8" data-page-node-id="0qE0gwVtkkXBtwTUvTbGxp" />
+<meta name="viewport" content="width=device-width,initial-scale=1" data-page-node-id="F4ZdSqvcfH3tiZsq0Kw8W8" />
 <title>个人主页</title>
 <style>
   /* ---------- 设计令牌：呼应背景图色调 ---------- */
@@ -42,7 +42,7 @@
 
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; }
-  html{ scroll-behavior: smooth; }
+  html{ scroll-behavior:smooth; overflow-x:clip; }
   body{
     font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC",
                  "STSong", "PingFang SC", "Hiragino Sans GB",
@@ -60,7 +60,7 @@
     margin: 0 auto;
     padding: 104px 28px 96px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   /* ================= 视图切换导航 =================
@@ -72,7 +72,6 @@
     justify-content: center;
     gap: 44px;
     margin-bottom: 52px;
-    animation: rise 1s var(--ease) both;
   }
   /* 导航压在亮天空上（实测 2.67:1，未选中项也偏低）。
      加一层大幅羽化的柔光底 —— 边缘完全化开，不形成块面。
@@ -187,7 +186,7 @@
   }
   .card > *{ position: relative; }
 
-  .card:hover{ transform: translateY(-3px); }
+  .card:hover{ transform:translateY(-4px) rotate(-.2deg); }
 
   .card h2{
     font-size: 13px;
@@ -359,8 +358,6 @@
        实测这档下：标题 7.05:1、正文 5.01:1，都达标。 */
     background: rgba(255,255,255,.52);
     transition: transform .45s var(--ease), background .45s var(--ease);
-    /* 少量交错入场 */
-    animation: rise .8s var(--ease) both;
   }
   .wcard:hover{
     transform: translateY(-4px);
@@ -493,7 +490,7 @@
   /* ---------- 风动微粒（少量） ---------- */
   .wind{
     position: fixed; inset:0;
-    pointer-events:none; z-index:0; overflow:hidden;
+    pointer-events:none; z-index:1; overflow:hidden;
   }
   .puff{
     position:absolute;
@@ -506,20 +503,27 @@
     0%   { transform: translate(0,0) scale(.6); opacity:0; }
     10%  { opacity:1; }
     90%  { opacity:.95; }
-    100% { transform: translate(-120vw, 18vh) scale(1); opacity:0; }
+    100% { transform: translate(120vw, 18vh) scale(1); opacity:0; }
   }
 
-  /* 入场 */
-  .card{ animation: rise 1s var(--ease) both; }
-  .card:nth-of-type(2){ animation-delay: .1s; }
-  .card:nth-of-type(3){ animation-delay: .2s; }
-  .card:nth-of-type(4){ animation-delay: .3s; }
-  .gallery .wcard:nth-child(1){ animation-delay: .05s; }
-  .gallery .wcard:nth-child(2){ animation-delay: .12s; }
-  .gallery .wcard:nth-child(3){ animation-delay: .19s; }
-  .gallery .wcard:nth-child(4){ animation-delay: .26s; }
-  .gallery .wcard:nth-child(5){ animation-delay: .33s; }
-  .gallery .wcard:nth-child(6){ animation-delay: .40s; }
+  /* 每次进入 Style 1 时重播的分段入场 */
+  .style-one-shell.is-entering .tabs{ animation:styleOneNavEnter .58s var(--ease) both; }
+  .style-one-shell.is-entering .view.is-active .card,
+  .style-one-shell.is-entering .view.is-active .wcard{ animation:rise .78s var(--ease) both; }
+  .style-one-shell.is-entering .view.is-active .card:nth-child(1),
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(1){ animation-delay:.12s; }
+  .style-one-shell.is-entering .view.is-active .card:nth-child(2),
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(2){ animation-delay:.20s; }
+  .style-one-shell.is-entering .view.is-active .card:nth-child(3),
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(3){ animation-delay:.28s; }
+  .style-one-shell.is-entering .view.is-active .card:nth-child(4),
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(4){ animation-delay:.36s; }
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(5){ animation-delay:.44s; }
+  .style-one-shell.is-entering .view.is-active .wcard:nth-child(6){ animation-delay:.52s; }
+  @keyframes styleOneNavEnter{
+    from{ opacity:0; transform:translateY(-18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
   @keyframes rise{
     from{ opacity:0; transform: translateY(14px); }
     to  { opacity:1; transform: translateY(0); }
@@ -528,93 +532,566 @@
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior: auto; }
     .puff{ display:none; }
-    .card, .wcard, .tabs, .view.is-active{ animation: none; }
+    .card, .wcard, .tabs, .view.is-active{ animation: none !important; }
     .wcard:hover .cover > .zoom{ transform: none; }
     .view.is-active{ opacity: 1; transform: none; }
   }
+
+  /* ================= 第二风格：BLUE HOUR ================= */
+  .style-shell[hidden]{ display:none !important; }
+  .style-one-shell{ position:relative; min-height:100vh; }
+  .style-one-shell::before{
+    content:"";
+    position:fixed;
+    inset:-20px;
+    z-index:0;
+    pointer-events:none;
+    background:var(--bg) center/cover no-repeat;
+    transform:scale(1.025);
+    animation:styleOneLandscape 12s ease-in-out infinite alternate;
+    animation-delay:-3s;
+    will-change:transform;
+  }
+  @keyframes styleOneLandscape{
+    from{ transform:scale(1.025) translate3d(-14px,-3px,0); }
+    to{ transform:scale(1.025) translate3d(14px,3px,0); }
+  }
+  .style-one-shell.is-paused::before,
+  .style-one-shell.is-paused .puff{ animation-play-state:paused; }
+
+  .style-switch{
+    position:fixed;
+    top:28px;
+    right:30px;
+    z-index:90;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    appearance:none;
+    border:0;
+    background:rgba(253,246,234,.76);
+    color:#163554;
+    padding:8px 11px;
+    font:700 11px/1 "Segoe UI", sans-serif;
+    letter-spacing:.18em;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(21,44,67,.12);
+    backdrop-filter:blur(8px);
+    transition:transform .25s var(--ease), background .25s var(--ease), color .25s var(--ease);
+  }
+  .style-switch:hover{ transform:translateY(-2px); }
+  .style-switch:focus-visible{ outline:2px solid #e8a26b; outline-offset:4px; }
+  .style-switch .switch-index{ color:#1b67ff; }
+  .style-switch .switch-track{
+    position:relative;
+    width:28px;
+    height:1px;
+    background:currentColor;
+    opacity:.75;
+  }
+  .style-switch .switch-track::after{
+    content:"";
+    position:absolute;
+    top:50%; right:0;
+    width:7px; height:7px;
+    border-radius:50%;
+    background:#1b67ff;
+    transform:translateY(-50%);
+  }
+  body.is-night{ background:#020818; }
+  body.is-night .style-switch{
+    color:#f4f8ff;
+    background:rgba(2,8,24,.58);
+    box-shadow:none;
+  }
+  body.is-night .style-switch .switch-index{ color:#f0b94b; }
+
+  /* ---------- 两套主题之间的全屏过场层 ---------- */
+  .theme-transition-canvas{
+    position:fixed;
+    inset:0;
+    z-index:120;
+    display:block;
+    width:100vw;
+    height:100svh;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  body.is-theme-transitioning{ overflow:hidden; }
+  body.is-theme-transitioning.is-canvas-transition .theme-transition-canvas{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+  }
+  body.is-theme-transitioning .style-switch{
+    opacity:.58;
+    cursor:wait;
+  }
+  .style-shell.is-transition-target,
+  .style-shell.is-transition-source{
+    display:block !important;
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100svh;
+    min-height:100svh;
+    overflow:hidden;
+  }
+  .style-shell.is-transition-target{ z-index:94; }
+  .style-one-shell.is-transition-target.is-waiting-entry .stage{ opacity:0; }
+  .style-shell.is-transition-source{
+    --wipe:-14%;
+    z-index:95;
+    -webkit-mask-image:linear-gradient(90deg,
+      transparent 0,
+      transparent var(--wipe),
+      rgba(0,0,0,.35) calc(var(--wipe) + 6vw),
+      #000 calc(var(--wipe) + 12vw),
+      #000 100%);
+    mask-image:linear-gradient(90deg,
+      transparent 0,
+      transparent var(--wipe),
+      rgba(0,0,0,.35) calc(var(--wipe) + 6vw),
+      #000 calc(var(--wipe) + 12vw),
+      #000 100%);
+    -webkit-mask-repeat:no-repeat;
+    mask-repeat:no-repeat;
+    -webkit-mask-size:100% 100%;
+    mask-size:100% 100%;
+  }
+
+  .night-shell{
+    --night-blue:#1769ff;
+    --night-blue-soft:#66b9ff;
+    --night-ink:#020817;
+    --night-white:#f5f8ff;
+    --night-gold:#efb743;
+    position:relative;
+    min-height:100svh;
+    overflow:hidden;
+    color:var(--night-white);
+    background:var(--night-ink);
+    font-family:"Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .night-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    background:url("image/night-style-bg.png") center/cover no-repeat fixed;
+    background-color:#020817;
+  }
+  .night-bg::before{
+    content:"";
+    position:absolute;
+    inset:-20px;
+    background:url("image/night-style-bg.png") center/cover no-repeat;
+    transform:scale(1.025);
+    animation:nightCameraDrift 13s ease-in-out infinite alternate;
+    animation-delay:-3.25s;
+    will-change:transform;
+  }
+  .night-bg::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(circle at 62% 20%,rgba(156,222,255,.28),rgba(54,133,255,.08) 18%,transparent 34%);
+    mix-blend-mode:screen;
+    animation:nightMoonBreath 5.5s ease-in-out infinite alternate;
+    animation-delay:-1.4s;
+    will-change:opacity,transform;
+  }
+  @keyframes nightCameraDrift{
+    from{ transform:scale(1.025) translate3d(-14px,2px,0); }
+    to{ transform:scale(1.025) translate3d(14px,-2px,0); }
+  }
+  @keyframes nightMoonBreath{
+    from{ opacity:.38; transform:scale(1); }
+    to{ opacity:.82; transform:scale(1.035); }
+  }
+  .night-shell.is-paused .night-bg::before,
+  .night-shell.is-paused .night-bg::after{ animation-play-state:paused; }
+
+  .night-header{
+    position:relative;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    gap:58px;
+    min-height:92px;
+    padding:0 10vw 0 3vw;
+  }
+  .night-brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    color:var(--night-white);
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.18em;
+    white-space:nowrap;
+  }
+  .night-brand::before{
+    content:"";
+    width:9px; height:22px;
+    background:var(--night-blue);
+    transform:skewX(-22deg);
+  }
+  .night-nav{ display:flex; align-items:center; gap:28px; }
+  .night-tab{
+    position:relative;
+    appearance:none;
+    border:0;
+    background:none;
+    color:rgba(245,248,255,.7);
+    padding:8px 2px 11px;
+    font:600 15px/1 inherit;
+    letter-spacing:.12em;
+    cursor:pointer;
+    transition:color .25s ease;
+  }
+  .night-tab::after{
+    content:"";
+    position:absolute;
+    left:0; right:100%; bottom:0;
+    height:2px;
+    background:var(--night-blue);
+    transform:skewX(-24deg);
+    transition:right .3s ease;
+  }
+  .night-tab:hover,
+  .night-tab[aria-selected="true"]{ color:#fff; }
+  .night-tab[aria-selected="true"]::after{ right:0; }
+  .night-tab:focus-visible{ outline:2px solid var(--night-blue-soft); outline-offset:4px; }
+
+  .night-side-index{
+    position:fixed;
+    left:2.8vw;
+    top:50%;
+    z-index:4;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    transform:translateY(-50%) rotate(-90deg);
+    transform-origin:left center;
+    color:rgba(245,248,255,.82);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.22em;
+  }
+  .night-side-index::before{ content:""; width:90px; height:1px; background:rgba(255,255,255,.68); }
+
+  .night-stage{
+    position:relative;
+    z-index:3;
+    min-height:calc(100svh - 92px);
+    width:min(620px, 39vw);
+    margin-left:auto;
+    margin-right:6.5vw;
+    padding:62px 0 50px;
+  }
+  .night-stage::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    inset:-54px -9vw -55px -72px;
+    background:linear-gradient(90deg, rgba(2,8,23,.08), rgba(2,8,23,.72) 20%, rgba(2,8,23,.94) 100%);
+    backdrop-filter:blur(2px);
+    pointer-events:none;
+  }
+  .night-view{ display:none; }
+  .night-view.is-active{ display:block; animation:nightViewIn .48s ease both; }
+  @keyframes nightViewIn{
+    from{ opacity:0; transform:translateX(18px); }
+    to{ opacity:1; transform:translateX(0); }
+  }
+  .night-shell.is-entering .night-header{
+    animation:nightHeaderEnter .52s ease-out both;
+  }
+  .night-shell.is-entering .night-view.is-active > *:not(.night-live){
+    animation:nightSliceEnter .7s cubic-bezier(.18,.75,.2,1) both;
+  }
+  .night-shell.is-entering .night-view.is-active > :nth-child(1){ animation-delay:.10s; }
+  .night-shell.is-entering .night-view.is-active > :nth-child(2){ animation-delay:.19s; }
+  .night-shell.is-entering .night-view.is-active > :nth-child(3){ animation-delay:.28s; }
+  .night-shell.is-entering .night-view.is-active > :nth-child(4){ animation-delay:.37s; }
+  .night-shell.is-entering .night-view.is-active > :nth-child(5){ animation-delay:.46s; }
+  .night-shell.is-entering .night-view.is-active > :nth-child(6){ animation-delay:.55s; }
+  .night-shell.is-entering .night-view.is-active > .night-contact-row{
+    animation:nightIconPop .56s cubic-bezier(.2,.9,.3,1.25) .64s both;
+  }
+  @keyframes nightHeaderEnter{
+    from{ opacity:0; transform:translate3d(18px,-8px,0); }
+    to{ opacity:1; transform:translate3d(0,0,0); }
+  }
+  @keyframes nightSliceEnter{
+    from{ opacity:0; transform:translate3d(24px,0,0); clip-path:polygon(18% 0,100% 0,100% 100%,18% 100%); }
+    to{ opacity:1; transform:translate3d(0,0,0); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+  }
+  @keyframes nightIconPop{
+    from{ opacity:0; transform:translate3d(16px,0,0) scale(.82); }
+    to{ opacity:1; transform:translate3d(0,0,0) scale(1); }
+  }
+  .night-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+    color:rgba(245,248,255,.8);
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+  }
+  .night-kicker::before{
+    content:"";
+    width:8px; height:22px;
+    background:var(--night-blue);
+    transform:skewX(-22deg);
+  }
+  .night-intro h1,
+  .night-section-title{
+    font-size:clamp(24px,2vw,34px);
+    line-height:1.15;
+    letter-spacing:.06em;
+    color:#fff;
+  }
+  .night-intro p{
+    max-width:540px;
+    margin-top:16px;
+    color:rgba(245,248,255,.88);
+    font-size:15px;
+    line-height:1.9;
+    text-shadow:0 2px 14px rgba(0,4,18,.65);
+  }
+  .night-rule{ width:88px; height:2px; margin:26px 0 32px; background:linear-gradient(90deg,var(--night-blue),rgba(23,105,255,0)); }
+  .night-focus{ display:grid; gap:10px; margin-bottom:34px; }
+  .night-focus-item{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    align-items:center;
+    font-size:14px;
+    letter-spacing:.08em;
+  }
+  .night-focus-item b{ color:var(--night-blue-soft); font-size:14px; }
+
+  .night-project-feature{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:end;
+    gap:24px;
+    padding:16px 0 18px 18px;
+    margin:7px 0 28px;
+    color:inherit;
+    text-decoration:none;
+    border-bottom:1px solid rgba(255,255,255,.55);
+    transition:padding-left .3s ease, border-color .3s ease;
+  }
+  .night-project-feature::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:16px;
+    width:3px;
+    background:var(--night-blue);
+    transform:skewX(-18deg);
+  }
+  .night-project-feature:hover{ padding-left:24px; border-color:var(--night-blue-soft); }
+  .night-project-feature h2{ font-size:clamp(25px,2.3vw,38px); line-height:1.1; letter-spacing:.03em; }
+  .night-project-feature p{ margin-top:8px; color:rgba(245,248,255,.76); font-size:13px; }
+  .night-project-feature .project-arrow{ color:var(--night-blue-soft); font-size:12px; font-weight:700; letter-spacing:.12em; white-space:nowrap; }
+
+  .night-elsewhere,
+  .night-contact-row{ display:flex; align-items:center; flex-wrap:wrap; gap:18px; }
+  .night-elsewhere{ color:rgba(245,248,255,.84); font-size:13px; letter-spacing:.12em; }
+  .night-contact-row{
+    width:max-content;
+    margin-top:18px;
+    padding:2px 22px 2px 0;
+    gap:12px;
+    border-right:1px solid rgba(255,255,255,.22);
+  }
+  .night-contact-link{
+    appearance:none;
+    border:0;
+    background:none;
+    color:rgba(255,255,255,.86);
+    width:38px;
+    height:38px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    text-decoration:none;
+    cursor:pointer;
+    transition:color .22s ease, transform .22s ease, background .22s ease;
+  }
+  .night-contact-link svg{ width:20px; height:20px; display:block; }
+  .night-contact-link:hover{
+    color:#fff;
+    background:rgba(23,105,255,.28);
+    transform:translateY(-3px);
+  }
+  .night-contact-link:focus-visible{
+    outline:2px solid var(--night-blue-soft);
+    outline-offset:3px;
+  }
+  .night-contact-link .night-check-icon{ display:none; }
+  .night-contact-link.is-copied{ color:#8bd4ff; background:rgba(23,105,255,.24); }
+  .night-contact-link.is-copied .night-mail-icon{ display:none; }
+  .night-contact-link.is-copied .night-check-icon{ display:block; }
+
+  .night-project-list{ margin-top:28px; border-top:1px solid rgba(255,255,255,.36); }
+  .night-project-row{
+    display:grid;
+    grid-template-columns:58px 1fr auto;
+    align-items:center;
+    gap:18px;
+    padding:22px 0;
+    color:inherit;
+    text-decoration:none;
+    border-bottom:1px solid rgba(255,255,255,.28);
+    transition:transform .25s ease, background .25s ease;
+  }
+  .night-project-row:hover{ transform:translateX(7px); background:linear-gradient(90deg,rgba(23,105,255,.12),transparent); }
+  .night-project-row .num{ color:var(--night-blue-soft); font-weight:800; }
+  .night-project-row h2{ font-size:20px; letter-spacing:.04em; }
+  .night-project-row p{ margin-top:4px; color:rgba(245,248,255,.68); font-size:12px; }
+  .night-project-row .go{ font-size:20px; color:var(--night-gold); }
+
+  .night-note-list{ display:grid; gap:22px; margin-top:28px; }
+  .night-note{
+    position:relative;
+    padding:4px 0 18px 20px;
+    border-bottom:1px solid rgba(255,255,255,.26);
+  }
+  .night-note::before{ content:""; position:absolute; left:0; top:6px; width:4px; height:34px; background:var(--night-blue); transform:skewX(-20deg); }
+  .night-note time{ color:var(--night-blue-soft); font-size:11px; letter-spacing:.16em; }
+  .night-note h2{ margin-top:7px; font-size:18px; }
+  .night-note p{ margin-top:7px; color:rgba(245,248,255,.7); font-size:13px; line-height:1.7; }
+
+  .night-about-copy{ margin-top:24px; max-width:520px; }
+  .night-about-copy p{ margin-bottom:16px; color:rgba(245,248,255,.82); line-height:1.9; font-size:14px; }
+  .night-about-copy strong{ color:#fff; font-size:20px; }
+  .night-live{ position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+  @media (max-width:1050px){
+    .night-header{ padding-right:120px; gap:30px; }
+    .night-stage{ width:min(560px,48vw); margin-right:4vw; padding-top:42px; }
+  }
+  @media (max-width:760px){
+    .style-switch{ top:16px; right:14px; }
+    .night-shell{ overflow-y:auto; }
+    .night-header{ align-items:flex-start; min-height:130px; padding:20px 92px 0 20px; gap:0; }
+    .night-brand{ font-size:10px; }
+    .night-nav{ position:absolute; left:20px; top:68px; gap:20px; }
+    .night-tab{ font-size:13px; }
+    .night-side-index{ display:none; }
+    .night-stage{ width:auto; margin:31vh 20px 0; padding:34px 0 44px; min-height:60svh; }
+    .night-stage::before{ inset:-50px -20px -60px; background:linear-gradient(180deg,rgba(2,8,23,0),rgba(2,8,23,.82) 16%,rgba(2,8,23,.96)); }
+    .night-project-feature{ grid-template-columns:1fr; gap:10px; }
+    .night-project-row{ grid-template-columns:36px 1fr auto; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .style-one-shell::before,
+    .night-bg::before,
+    .night-bg::after,
+    .night-shell.is-entering .night-header,
+    .night-shell.is-entering .night-view.is-active > *:not(.night-live),
+    .night-view.is-active{ animation:none !important; transform:none; }
+    .theme-transition-canvas{ display:none; }
+  }
+  .paper-transition-canvas{ position:fixed; inset:0; width:100%; height:100%; z-index:130; pointer-events:none; }
+  .paper-transition-canvas[hidden]{ display:none; }
+  .paper-revealed .night-view.is-active{ animation:none !important; }
+  body.is-paper-switch .style-shell *,
+  body.is-paper-switch .style-shell *::before,
+  body.is-paper-switch .style-shell *::after{ transition:none !important; animation-play-state:paused !important; }
 </style>
 </head>
-<body>
+<body data-page-node-id="DK0zjBnB4D6hVuLkF1TV8E">
 
-<div class="wind" aria-hidden="true"></div>
+<div class="style-shell style-one-shell" id="style-one" data-page-node-id="EDBFeDB2zn5YFbyyJhoAyD">
+<div class="wind" aria-hidden="true" data-page-node-id="fnGwLLp0xbahZKDrUsoHBa"></div>
 
-<main class="stage">
+<main class="stage" data-page-node-id="z1OGFYUAz20TwDBJbqvfeW">
 
   <!-- 视图切换 -->
-  <nav class="tabs" role="tablist" aria-label="页面视图切换">
+  <nav class="tabs" role="tablist" aria-label="页面视图切换" data-page-node-id="CBPZuE2AlvWxWDDwGqMmXF">
     <button class="tab" role="tab" id="tab-about"
-            aria-controls="view-about" aria-selected="true">关于</button>
+            aria-controls="view-about" aria-selected="true" data-page-node-id="QZ0lQlhGZbnDbaG71nOxfC">关于</button>
     <button class="tab" role="tab" id="tab-works"
-            aria-controls="view-works" aria-selected="false" tabindex="-1">作品</button>
-    <span class="ink-bar" aria-hidden="true"></span>
+            aria-controls="view-works" aria-selected="false" tabindex="-1" data-page-node-id="4tgRHeGC2LyWCzCSvk5tlw">作品</button>
+    <span class="ink-bar" aria-hidden="true" data-page-node-id="qEs8Yc9M4x6dGdF0ye4pjE"></span>
   </nav>
 
   <!-- ============ 视图一：关于 ============ -->
   <section class="view is-active" id="view-about"
-           role="tabpanel" aria-labelledby="tab-about" tabindex="0">
-    <div class="grid">
+           role="tabpanel" aria-labelledby="tab-about" tabindex="0" data-page-node-id="VbwIE7dnu67XXmKh0pXb57">
+    <div class="grid" data-page-node-id="F4hZGcVkGFIEBXKPMstcL4">
 
-      <article class="card about">
-        <span class="bar"></span>
-        <h2>关于我</h2>
-        <p class="quote">中农->华西，<br/>用一点点的积累，完成所想的星辰大海</p>
-        <p class="meta">主业是生物+AI/偶尔写一点文字。<br/>我相信简单的东西最耐看，慢一点也挺好。</p>
+      <article class="card about" data-page-node-id="DELQnti3jGkfeCEojYe0JW">
+        <span class="bar" data-page-node-id="dtLG2wHe5SxxQQI5BF5kjy"></span>
+        <h2 data-page-node-id="BlRyVqJJdzXDlhr2j5k05z">关于我</h2>
+        <p class="quote" data-page-node-id="nbUur3MPVHRImUv8mpZDu2">中农->华西，<br data-page-node-id="A2zNHL8qYQ7JZPQRtOKlMa"/>用一点点的积累，完成所想所愿</p>
+        <p class="meta" data-page-node-id="5AMzpTUOO9AvWBhsIP2ZZO">主业是生物+AI/偶尔写一点文字。<br data-page-node-id="BCXiN1d61t0ZJuigkzzVUg"/>我相信世界终究能被人类拆解成可理解的模样。</p>
       </article>
 
-      <article class="card">
-        <span class="bar"></span>
-        <h2>最近在做的事</h2>
-        <div class="timeline">
-          <div class="tl-item">
-               <div class="when">现在</div>
-            <div class="what">继续读书和个人兴趣的学习</div>
+      <article class="card" data-page-node-id="zNV4OsMIHyRNlIRZievHfM">
+        <span class="bar" data-page-node-id="9GGXUjOtgnIeZYuaJzwErc"></span>
+        <h2 data-page-node-id="eYWw2SjRhlYmNVIgjORnf5">最近在做的事</h2>
+        <div class="timeline" data-page-node-id="CMYz55IR8HiuTrR4qAHAUK">
+          <div class="tl-item" data-page-node-id="0IlUpmTJVuUwvgNT7AUhJh">
+               <div class="when" data-page-node-id="HgfmfKRxlv5cKG7FQg20lp">现在</div>
+            <div class="what" data-page-node-id="RsveUPU114hC1MMsB3PsWH">继续读书和个人兴趣的学习</div>
           </div>
-          <div class="tl-item">
-            <div class="when">持续</div>
-            <div class="what">记录生活，自动化的每日总结</div>
+          <div class="tl-item" data-page-node-id="OXcubx7sUixY7sZKEvxJxk">
+            <div class="when" data-page-node-id="bhHvJcr0DTeNmFHJ3wXFU6">持续</div>
+            <div class="what" data-page-node-id="sl56RYpsEJeoOB86PcqXDJ">记录生活，自动化的每日总结</div>
           </div>
         </div>
       </article>
 
-      <article class="card full">
-        <span class="bar"></span>
-        <h2>我感兴趣的方向</h2>
-        <div class="works">
-          <div class="work">
-             <div class="ti">界面与交互开发</div>
-            <div class="ds">把复杂的事情做简单，<br/>把简单的事做舒服。</div>
+      <article class="card full" data-page-node-id="eaMEdubkO4mH6ssrS1NmpT">
+        <span class="bar" data-page-node-id="hUi7KZEwZNjFOfGQF0UUX8"></span>
+        <h2 data-page-node-id="a8u4B5ByfjbiPqoQMTOniq">我感兴趣的方向</h2>
+        <div class="works" data-page-node-id="VSxRhg5SKQ8TmA0D2TgxpM">
+          <div class="work" data-page-node-id="9IdO2lRzFzuDSVHTElKNsM">
+             <div class="ti" data-page-node-id="HCta61db5mQEJw8w9sMZZk">界面与交互开发</div>
+            <div class="ds" data-page-node-id="0tUy4wNcMv2QCMljsVaNmE">把复杂的事情做简单，<br data-page-node-id="cdRDEmZJPdgyKDQpI2c5J0"/>把简单的事做舒服。</div>
           </div>
-          <div class="work">
-            <div class="ti">AI+手绘插画创作</div>
-            <div class="ds">留住美好的，<br/>和一些不太会再来的瞬间。</div>
+          <div class="work" data-page-node-id="2kOJB2MmGzIEdjOwu8qPzE">
+            <div class="ti" data-page-node-id="mwlIqC3Cuo1htijziWQP8w">AI+手绘插画创作</div>
+            <div class="ds" data-page-node-id="wikuuQi1X5vDv66BlBmXgJ">留住美好的，<br data-page-node-id="ODQUpJppYmCzB7Sl6AnU1e"/>和一些不太会再来的瞬间。</div>
           </div>
-          <div class="work">
-            <div class="ti">读书，旅游</div>
-            <div class="ds">读万卷书，行万里路<br/>世界还有许多瞬间需要我们去发现。</div>
+          <div class="work" data-page-node-id="j01WSPhwCJCfLwx0lDBPOM">
+            <div class="ti" data-page-node-id="RlLSkM68H8Lkf92nFxRFrp">读书，旅游</div>
+            <div class="ds" data-page-node-id="366kRQVkEyeH2euXx8iCEg">读万卷书，行万里路<br data-page-node-id="NzuxvYmfqT79SF6T3qZ92Z"/>世界还有许多瞬间需要我们去发现。</div>
           </div>
-          <div class="work">
-            <div class="ti">探索未知</div>
-            <div class="ds">所有的未知，<br/>都是我们前进的动力。</div>
+          <div class="work" data-page-node-id="BA5fpvqOrWZaWFUiNqkD8E">
+            <div class="ti" data-page-node-id="MlnU9hFrJHmN6QP3HqWAA1">探索未知</div>
+            <div class="ds" data-page-node-id="fMVQPVTCCSwtGJuS427v1Y">所有的未知，<br data-page-node-id="mAfCE2kE85geDLa2irjait"/>都是我们前进的动力。</div>
           </div>
         </div>
       </article>
 
-      <article class="card full contact-card">
-        <span class="bar"></span>
-        <h2>找到我</h2>
-        <div class="contact">
+      <article class="card full contact-card" data-page-node-id="vHx4ToyeQNl595XMdQfEkZ">
+        <span class="bar" data-page-node-id="FzDJ0AXl9TJK3dJNeGoN0t"></span>
+        <h2 data-page-node-id="li1MLDuSI9aGY3lAJaNeyr">找到我</h2>
+        <div class="contact" data-page-node-id="q3He0rX2IXIq3XRwS3IaY0">
           <button type="button" class="cbtn" data-email="2944007545@qq.com"
-                  title="点击复制邮箱地址" aria-label="复制邮箱地址">
-            <svg class="ico-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-            <svg class="ico-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>
-            <span>邮箱</span>
+                  title="点击复制邮箱地址" aria-label="复制邮箱地址" data-page-node-id="7MKNcdJ5Ql5nSChoHWDPIt">
+            <svg class="ico-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="EzcC7XKXCggVMQS0lBoPFg"><rect x="3" y="5" width="18" height="14" rx="2" data-page-node-id="TckkVwEChD3RH3ygbcDUkk"/><path d="m3 7 9 6 9-6" data-page-node-id="dRFB4gKrGQDAGgETOSLAme"/></svg>
+            <svg class="ico-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="xN2IrY9YtaKKHf6cGCS9Qk"><path d="M4 12.5 9.5 18 20 6.5" data-page-node-id="NpeoSRfbT5VEypiLl1mBvo"/></svg>
+            <span data-page-node-id="A5HPRIDUt9KlEYCwNmyiOt">邮箱</span>
           </button>
-          <a href="https://github.com/jyx114514" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.35.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.71 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.45-2.7 5.41-5.27 5.7.41.36.78 1.07.78 2.16v3.2c0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
+          <a href="https://github.com/jyx114514" target="_blank" rel="noopener noreferrer" aria-label="GitHub" data-page-node-id="1TtSH2BcAWvzsfeDSH0tUA">
+            <svg viewBox="0 0 24 24" fill="currentColor" data-page-node-id="GAGRic1YPiH2u2dUKtEB0K"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.69-3.88-1.36-3.88-1.36-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.35.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.71 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.45-2.7 5.41-5.27 5.7.41.36.78 1.07.78 2.16v3.2c0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z" data-page-node-id="WyVRcz1zeXAssI3vFEMjTl"/></svg>
             GitHub
           </a>
         </div>
-        <p class="sr-live" role="status" aria-live="polite"></p>
+        <p class="sr-live" role="status" aria-live="polite" data-page-node-id="DqHlv4jNY7xFediHODhryV"></p>
       </article>
 
     </div>
@@ -622,8 +1099,8 @@
 
   <!-- ============ 视图二：作品 ============ -->
   <section class="view" id="view-works"
-           role="tabpanel" aria-labelledby="tab-works" tabindex="0" hidden>
-    <div class="gallery">
+           role="tabpanel" aria-labelledby="tab-works" tabindex="0" hidden data-page-node-id="B6cYhz5lyEsukqKSoEta9d">
+    <div class="gallery" data-page-node-id="aFNy3YoGPw8zsGvJrCC83q">
 
       <!-- ===== 一张作品卡的结构（照着改即可）=====
            1) href        -> 换成作品链接（站外会自动新标签页打开）
@@ -648,30 +1125,30 @@
       </a>
       ============================================ -->
 
-      <a class="wcard" href="https://github.com/jyx114514/study-skill" target="_blank" rel="noopener noreferrer">
-        <div class="cover" style="--cover: url('image/skill.png'); --pos: 30%;">
+      <a class="wcard" href="https://github.com/jyx114514/study-skill" target="_blank" rel="noopener noreferrer" data-page-node-id="S31dWTDyycqezWkp1lmD6p">
+        <div class="cover" style="--cover: url('image/skill.png'); --pos: 30%;" data-page-node-id="5XkFQOWs0qM4ajjjsMg2Ba">
   <!--            <span class="zoom"></span>  选中放大   -->
         </div>
-        <div class="wbody">
-          <div class="wmeta">2026 </div>
-          <h3>个人学习skill</h3>
-          <p>让AI帮你学习，总结。已于9/4更新</p>
-          <span class="arrow">查看
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="wbody" data-page-node-id="LBOcRAwd8lUZYcperiEvLS">
+          <div class="wmeta" data-page-node-id="PNXUZFlqnVBCoA77CRqyc7">2026 </div>
+          <h3 data-page-node-id="BdLe12UIGTiHujEGcit5jS">个人学习skill</h3>
+          <p data-page-node-id="RmAZqGn9g7XRIulc11ufDS">让AI帮你学习，总结。已于9/4更新</p>
+          <span class="arrow" data-page-node-id="kYQ0lq4DnvY4JkwfY9Ht01">查看
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="XPZUwQE1J0wJShEFSsa2pm"><path d="M5 12h14M13 6l6 6-6 6" data-page-node-id="ZDF1E062dZqFvwgazujxAl"/></svg>
           </span>
         </div>
       </a>
 
-<a class="wcard" href="https://github.com/jyx114514/token-paid" target="_blank" rel="noopener noreferrer">
-        <div class="cover" style="--cover: url('image/token-paid.png'); --pos: 45%;">
+<a class="wcard" href="https://github.com/jyx114514/token-paid" target="_blank" rel="noopener noreferrer" data-page-node-id="t98TzlPmHOLHc1oFJYK4nn">
+        <div class="cover" style="--cover: url('image/token-paid.png'); --pos: 45%;" data-page-node-id="FObsL8zAwGLLN2bLomKKpu">
   <!--            <span class="zoom"></span>  选中放大   -->
         </div>
-        <div class="wbody">
-          <div class="wmeta">2026 </div>
-          <h3>token-paid</h3>
-          <p>一个轻量化codex，workbuddy，token使用分析py包</p>
-          <span class="arrow">查看
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <div class="wbody" data-page-node-id="B1qQ4d1cubCPmyfW5NQeDA">
+          <div class="wmeta" data-page-node-id="rAnDWUlCl4BPZFZmQOJ1Dp">2026 </div>
+          <h3 data-page-node-id="URnuxjFCqnGp8EdxXzQgox">token-paid</h3>
+          <p data-page-node-id="SUwrEuagBfSHLGGEhlefxu">一个轻量化codex，workbuddy，token使用分析py包</p>
+          <span class="arrow" data-page-node-id="94zUYjkre02uSh8iLhYtTI">查看
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" data-page-node-id="HM7kGiUA8PDlEuKZggeKbU"><path d="M5 12h14M13 6l6 6-6 6" data-page-node-id="HRfl6QQvNf3AQZZMBZiADh"/></svg>
           </span>
         </div>
       </a>
@@ -679,28 +1156,136 @@
       
     </div>
 
-    <p class="gallery-note on-image">还有一些零碎的，正在整理</p>
+    <p class="gallery-note on-image" data-page-node-id="BbAx5kSDnE2kN81REDrvj0">还有一些零碎的，正在整理</p>
   </section>
 
-  <footer class="on-image">
-    <span class="line"></span>
+  <footer class="on-image" data-page-node-id="0YRrnzchH4xqArKkkBgu2A">
+    <span class="line" data-page-node-id="W5pM54qrl0SypEApMTfEAe"></span>
     在这个嘈杂的时代，放慢自己的脚步，做自己的master
   </footer>
 </main>
+</div>
 
-<script>
+<!-- ================= 第二风格：内容优先的蓝色游戏编辑排版 ================= -->
+<section class="style-shell night-shell" id="style-two" aria-label="第二风格个人主页" aria-hidden="true" hidden data-page-node-id="CuFlw111RJw8pGYJRD3FBh">
+  <div class="night-bg" aria-hidden="true" data-page-node-id="OjjChDrWtWd8CxGScTVZFu"></div>
+  <header class="night-header" data-page-node-id="3eklwQob8qM5rMegj6kpOl">
+    <div class="night-brand" data-page-node-id="7GKCRStHqbj3If319dTP1k"></div>
+    <nav class="night-nav" role="tablist" aria-label="第二风格页面导航" data-page-node-id="L6Hl6CGmtKwARs5YicqPdb">
+      <button class="night-tab" id="night-tab-home" role="tab" aria-controls="night-view-home" aria-selected="true" data-page-node-id="JFIQejVCt8GA39E10Bfz27">首页</button>
+      <button class="night-tab" id="night-tab-projects" role="tab" aria-controls="night-view-projects" aria-selected="false" tabindex="-1" data-page-node-id="rfHTr4ESkvPVEvPBYFyoh6">项目</button>
+      <button class="night-tab" id="night-tab-about" role="tab" aria-controls="night-view-about" aria-selected="false" tabindex="-1" data-page-node-id="Wv7doUxic6l5cmWFkCBlcA">关于</button>
+    </nav>
+  </header>
+
+  
+
+  <main class="night-stage" data-page-node-id="guwJyBtTLMT3iTJGDgYjvy">
+    <section class="night-view is-active" id="night-view-home" role="tabpanel" aria-labelledby="night-tab-home" data-page-node-id="IBdvzw12EXeKCArcfqgGPf">
+      <div class="night-intro" data-page-node-id="XnJmltVRi1tOf2ReHdeqFO">
+        <div class="night-kicker" data-page-node-id="GBD3AFEif0UbOkjBf30hP0">PROFILE / now</div>
+        <h1 data-page-node-id="sqwKxfMu7Xxz2Kg2PkOskN">生物 + 深度学习</h1>
+        <p data-page-node-id="EBT0tCDAYYbSPrcExLoOPt">用一个黑箱破解另一个黑箱，再反过来解释它们，也未尝不可。</p>
+      </div>
+      <div class="night-rule" data-page-node-id="GSJA2x52fV5HLU6ywqhIeo"></div>
+
+      <div class="night-kicker" data-page-node-id="XuCB3OjbZfVtl0MPCsWqSn">CURRENT FOCUS</div>
+      <div class="night-focus" data-page-node-id="aqCXT3RKs0Pvse6U8rdMLr">
+        <div class="night-focus-item" data-page-node-id="wAZXDjVXVpPqTGU90HG3vE"><b data-page-node-id="MLEhJQzuPMsLouUenWL3MT">01</b><span data-page-node-id="sQvB1Te9YdDMEVDjpPQVjG">学习与知识整理</span></div>
+        <div class="night-focus-item" data-page-node-id="GyrRX5UOOOwfdhbLpX5jVa"><b data-page-node-id="oPvnKBsfxbYLEZf7MRGchp">02</b><span data-page-node-id="9yFFBAjTA2PVuXJbGDWSYv">苦哈哈学生一个，毕设，考试，事多的忙不过来</span></div>
+
+      </div>
+
+      <div class="night-kicker" data-page-node-id="y9uCzNj1sesZOz9XuYGojC">SELECTED PROJECT</div>
+      <a class="night-project-feature" href="https://github.com/jyx114514/token-paid" target="_blank" rel="noopener noreferrer" data-page-node-id="jSdRJpImkk3cwYYe9CyqgB">
+        <div data-page-node-id="gqErfqtyzbEYjVup3wIZ3t">
+          <h2 data-page-node-id="UB01lMCIMDpFdYVy2Yo0Mu">A pypl: token-paid</h2>
+          <p data-page-node-id="gAInN0eJ7xsCTQ0tfm6D2d">看看腾讯和openAI把你的额度都用到哪里了。</p>
+        </div>
+        <span class="project-arrow" data-page-node-id="J98RIau4OuiD8Bo62LAoSx">VIEW PROJECT →</span>
+      </a>
+
+      <div class="night-kicker" data-page-node-id="FwEHl7MVBUVxdJ95InLT0Q">OFFLINE / ELSEWHERE</div>
+      <div class="night-elsewhere" data-page-node-id="LtDdzj4ZdOlF1EhF1Ky8XD">插画 · 读书 · 旅行 · 享受这糟糕透顶又不得不接受的现实</div>
+      <div class="night-contact-row" data-page-node-id="iBBWEDyKeUlVVxSYrFyGxY">
+        <button class="night-contact-link night-copy" type="button" data-email="2944007545@qq.com" aria-label="复制邮箱地址" title="复制邮箱地址" data-page-node-id="Z9Vk7thMDdq9Gmghbz3n0p">
+          <svg class="night-mail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-page-node-id="x8m6CrSk6udmovXzxpvkPe">
+            <rect x="3" y="5" width="18" height="14" rx="2" data-page-node-id="Jxh9av6WSN4dmWj2DSR6dm"></rect>
+            <path d="m4 7 8 6 8-6" data-page-node-id="hioCsoTnGlb4vKL9njnGLW"></path>
+          </svg>
+          <svg class="night-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-page-node-id="mMGfpa2LqIHx8HW6sqhfhm">
+            <path d="m5 12 4.5 4.5L19 7" data-page-node-id="rK2yS4XXlaW3YDZLg1RZKd"></path>
+          </svg>
+        </button>
+        <a class="night-contact-link" href="https://github.com/jyx114514" target="_blank" rel="noopener noreferrer" aria-label="打开 GitHub" title="GitHub" data-page-node-id="Xc5gWMgpXKUBfFxHvE1kTI">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-page-node-id="jXFF9YUMNLuJpzZHWw47Kr">
+            <path d="M12 .8a11.4 11.4 0 0 0-3.6 22.2c.57.1.78-.25.78-.55v-2.14c-3.18.7-3.85-1.35-3.85-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.03-.71.08-.7.08-.7 1.14.09 1.74 1.18 1.74 1.18 1.02 1.74 2.67 1.24 3.32.95.1-.74.4-1.24.72-1.53-2.54-.29-5.2-1.27-5.2-5.65 0-1.25.44-2.27 1.17-3.07-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.14 1.17a10.9 10.9 0 0 1 5.72 0C17.05 5 18 5.31 18 5.31c.62 1.57.23 2.73.11 3.02.73.8 1.17 1.82 1.17 3.07 0 4.4-2.68 5.35-5.23 5.64.41.36.78 1.06.78 2.14v3.27c0 .3.2.66.79.55A11.4 11.4 0 0 0 12 .8Z" data-page-node-id="ZMKboZ21ThrlvBE4urHdOs"></path>
+          </svg>
+        </a>
+      </div>
+      <p class="night-live" role="status" aria-live="polite" data-page-node-id="BxdxXlzl0CkXqLULtuj7yX"></p>
+    </section>
+
+    <section class="night-view" id="night-view-projects" role="tabpanel" aria-labelledby="night-tab-projects" hidden data-page-node-id="RLzMGGPGeyV28mDvqvYvuJ">
+      <div class="night-kicker" data-page-node-id="uyF3AffWQCO9VFL3yLWEsn">SELECTED WORK / 02</div>
+      <h1 class="night-section-title" data-page-node-id="soUEuIbf1ey7ofjdTgchUd">项目</h1>
+      <div class="night-project-list" data-page-node-id="MmMhhcZgPq607LMtrN5xmH">
+        <a class="night-project-row" href="https://github.com/jyx114514/study-skill" target="_blank" rel="noopener noreferrer" data-page-node-id="pp42imtdnf81HdRUs9F1np">
+          <span class="num" data-page-node-id="YGv1Dt8F7yqCwRWhtByFai">01</span>
+          <span data-page-node-id="QzJ9WiPD5KXjF8yUyNPI39"><h2 data-page-node-id="nrJSCboxMcQMJRXqRRXPqf">Study Skill</h2><p data-page-node-id="faEKsoTxNoKtKo9wVQgupJ">面向学习、总结与回顾的个人 Skill。</p></span>
+          <span class="go" data-page-node-id="5Mw5Np1UnWpszNwzVcciAs">→</span>
+        </a>
+        <a class="night-project-row" href="https://github.com/jyx114514/token-paid" target="_blank" rel="noopener noreferrer" data-page-node-id="IGhcEPGkfpjskVlkquG8S6">
+          <span class="num" data-page-node-id="B9wasjnDJJrCmdSzKDwRSV">02</span>
+          <span data-page-node-id="PEyOFHJbOBN5iqB51mLq5h"><h2 data-page-node-id="hKYTVE6QGxcE3GJR2MHKs6">token-paid</h2><p data-page-node-id="9bg4WnzB9E8p3bG9uKcZYN">轻量化的 Codex、Workbuddy Token 使用分析工具。</p></span>
+          <span class="go" data-page-node-id="wQD1mNG3GODs9WSBSlxhZd">→</span>
+        </a>
+      </div>
+    </section>
+
+    
+    <section class="night-view" id="night-view-about" role="tabpanel" aria-labelledby="night-tab-about" hidden data-page-node-id="RYRIirMnLZya6ILZUo8iMX">
+      <div class="night-kicker" data-page-node-id="8RMDUYOaS4y5RiS97GlkBp">ABOUT</div>
+      <h1 class="night-section-title" data-page-node-id="UHRomOnZeiBcGSLfxJtqY8">关于我</h1>
+      <div class="night-about-copy" data-page-node-id="t40qysVKtiM6t13gNSOCD0">
+        <p data-page-node-id="316WrdXAvECCu6wmJFGpn2"><strong data-page-node-id="MOrBw6gPDNrIEAxJFFVzCv">你猜不透，也别乱猜，不要把刻板印象往我身上套</strong></p>
+        <p data-page-node-id="AM6naVTstg6E3zcvQxSBVm">05年牢登，最大的爱好就是自己折腾点小玩具
+        <br data-page-node-id="Nj6IynjZAYVFEAfYi1AnNF">没事出去吃一顿，点杯奶茶</p>
+
+        <p data-page-node-id="ooSbITtAeMZR1CkCy7G8uT">「不登校」爱好者，上学哪有听歌爽🤗，打开网易云循环播放
+          <br data-page-node-id="YRsUODtzjWTNCw1BumG3y2">「鳥の詩」、「傷つき傷つけ痛くて辛い」、「悪魔の子」...</p>
+        <br data-page-node-id="rxwGLH3J0DMmcWwb7rWW54">
+        <br data-page-node-id="lgn7G0uZeH8Ha6YpQ96XhI">
+        <p data-page-node-id="CZ9oc1oIrHqMPrquTBFeEY">世界以痛吻我，我可不可以告他性骚扰？</p>
+      </div>
+
+    </section>
+  </main>
+</section>
+
+<canvas class="theme-transition-canvas" id="theme-transition-canvas" aria-hidden="true" data-page-node-id="a2RyJAJs5a28FRphfi28k8"></canvas>
+
+<button class="style-switch" id="style-switch" type="button" aria-controls="style-one style-two" aria-label="切换至第二风格" title="切换页面风格" data-page-node-id="eRcMbbPRXxWKnFqrsmI43g">
+  <span data-page-node-id="iTU5UIHmItrHdS17DTF1C2">STYLE</span>
+  <span class="switch-index" data-page-node-id="uaf5FNldB1P8vLlDmVG1P3">02</span>
+  <span class="switch-track" aria-hidden="true" data-page-node-id="kFLTDtKfozDcZ8aYWls7ae"></span>
+</button>
+
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+import { PaperTransition } from "./src/transitions/PaperTransition.js";
 (function(){
   /* ---------- 风动微粒 ---------- */
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(!reduce){
     const wind = document.querySelector('.wind');
-    for(let i=0;i<12;i++){
+    for(let i=0;i<18;i++){
       const p = document.createElement('span');
       p.className = 'puff';
-      const dur = 16 + Math.random()*16;
-      const size = 2 + Math.random()*3;
+      const dur = 9 + Math.random()*7;
+      const size = 3 + Math.random()*4;
       p.style.top = (Math.random()*100) + 'vh';
-      p.style.right = (-5 - Math.random()*10) + 'vw';
+      p.style.left = (-5 - Math.random()*10) + 'vw';
       p.style.width = p.style.height = size + 'px';
       p.style.animationDuration = dur + 's';
       p.style.animationDelay = (-Math.random()*dur) + 's';
@@ -758,6 +1343,453 @@
         btn.classList.remove('is-copied');
         label.textContent = origin;
       }, 1900);
+    });
+  });
+
+  /* ---------- 第二风格邮箱复制 ---------- */
+  const nightLive = document.querySelector('.night-live');
+  document.querySelectorAll('.night-copy').forEach(btn => {
+    const originLabel = btn.getAttribute('aria-label') || '复制邮箱地址';
+    const originTitle = btn.getAttribute('title') || originLabel;
+    let timer;
+
+    btn.addEventListener('click', async () => {
+      const mail = btn.dataset.email.trim();
+      const ok = await copyText(mail);
+
+      clearTimeout(timer);
+      btn.classList.toggle('is-copied', ok);
+      btn.setAttribute('aria-label', ok ? '邮箱地址已复制' : '复制失败，邮箱地址是 ' + mail);
+      btn.setAttribute('title', ok ? '已复制' : mail);
+      if(nightLive) nightLive.textContent = ok
+        ? '邮箱地址已复制到剪贴板：' + mail
+        : '复制失败，邮箱地址是 ' + mail;
+
+      timer = setTimeout(() => {
+        btn.classList.remove('is-copied');
+        btn.setAttribute('aria-label', originLabel);
+        btn.setAttribute('title', originTitle);
+      }, 1900);
+    });
+  });
+
+  /* ---------- 两套完整风格切换与蒲公英过场 ---------- */
+  const styleOne = document.querySelector('#style-one');
+  const styleTwo = document.querySelector('#style-two');
+  const styleSwitch = document.querySelector('#style-switch');
+  const switchIndex = styleSwitch && styleSwitch.querySelector('.switch-index');
+  const transitionCanvas = document.querySelector('#theme-transition-canvas');
+  const transitionContext = transitionCanvas && transitionCanvas.getContext('2d');
+  const entranceTimers = new WeakMap();
+  const supportsSoftMask = CSS.supports('mask-image', 'linear-gradient(90deg, transparent, #000)') ||
+    CSS.supports('-webkit-mask-image', 'linear-gradient(90deg, transparent, #000)');
+  let transitionState = null;
+  let transitionFrame = 0;
+  const paperTransition = new PaperTransition();
+
+
+  function replayThemeEntrance(shell){
+    if(reduce || !shell) return;
+
+    shell.classList.remove('is-entering');
+    void shell.offsetWidth;
+    shell.classList.add('is-entering');
+
+    clearTimeout(entranceTimers.get(shell));
+    entranceTimers.set(shell, setTimeout(() => {
+      shell.classList.remove('is-entering');
+      entranceTimers.delete(shell);
+    }, 1500));
+  }
+
+  function updateStyleSwitch(night){
+    if(!styleSwitch || !switchIndex) return;
+    switchIndex.textContent = night ? '01' : '02';
+    styleSwitch.setAttribute('aria-label', night ? '切换至第一风格' : '切换至第二风格');
+  }
+
+  function applyPageStyle(style){
+    const night = style === 2;
+    document.body.classList.toggle('is-night', night);
+    styleOne.hidden = night;
+    styleOne.setAttribute('aria-hidden', String(night));
+    styleTwo.hidden = !night;
+    styleTwo.setAttribute('aria-hidden', String(!night));
+    styleOne.inert = night;
+    styleTwo.inert = !night;
+    updateStyleSwitch(night);
+  }
+
+  function commitPageStyle(style, { replay = true, scroll = true } = {}){
+    applyPageStyle(style);
+    if(replay) replayThemeEntrance(style === 2 ? styleTwo : styleOne);
+    if(scroll) scrollTo({ top:0, behavior:reduce ? 'auto' : 'smooth' });
+  }
+
+  function setTransitionBusy(busy, type = ''){
+    document.body.classList.toggle('is-theme-transitioning', busy);
+    document.body.classList.toggle('is-canvas-transition', busy && type === 'canvas');
+    if(styleSwitch){
+      styleSwitch.disabled = busy;
+      styleSwitch.setAttribute('aria-busy', String(busy));
+    }
+  }
+
+  function resizeTransitionCanvas(){
+    if(!transitionCanvas || !transitionContext) return null;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    transitionCanvas.width = Math.round(width * dpr);
+    transitionCanvas.height = Math.round(height * dpr);
+    transitionCanvas.style.width = width + 'px';
+    transitionCanvas.style.height = height + 'px';
+    transitionContext.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { width, height };
+  }
+
+  function clamp01(value){ return Math.max(0, Math.min(1, value)); }
+  function easeInOut(value){
+    const t = clamp01(value);
+    return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+  function easeOut(value){ return 1 - Math.pow(1 - clamp01(value), 3); }
+
+  function seededRandom(seed){
+    let value = seed >>> 0;
+    return () => {
+      value += 0x6D2B79F5;
+      let result = value;
+      result = Math.imul(result ^ result >>> 15, result | 1);
+      result ^= result + Math.imul(result ^ result >>> 7, result | 61);
+      return ((result ^ result >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function makeDandelion(width, height){
+    const mobile = width <= 760;
+    const count = mobile ? 30 : 46;
+    const random = seededRandom(20260907);
+    const centerX = width * (mobile ? .17 : .12);
+    const centerY = height * (mobile ? .46 : .52);
+    const radius = mobile ? Math.min(58, width * .145) : Math.max(72, Math.min(108, width * .065));
+    const colors = ['#fffaf0', '#f6fbff', '#d9efff'];
+    const seeds = [];
+
+    for(let i = 0; i < count; i++){
+      const angle = random() * Math.PI * 2;
+      const ring = .38 + Math.sqrt(random()) * .62;
+      seeds.push({
+        anchorX:centerX + Math.cos(angle) * radius * ring,
+        anchorY:centerY + Math.sin(angle) * radius * ring,
+        angle,
+        release:.20 + random() * .27,
+        travel:.36 + random() * .08,
+        distance:width * (.78 + random() * .42),
+        lift:height * (-.14 + random() * .28),
+        wave:10 + random() * 22,
+        frequency:1.2 + random() * 1.8,
+        phase:random() * Math.PI * 2,
+        spin:(random() - .5) * 3.2,
+        scale:.72 + random() * .55,
+        color:colors[Math.floor(random() * colors.length)]
+      });
+    }
+    return { centerX, centerY, radius, seeds };
+  }
+
+  function drawDandelionSeed(ctx, x, y, angle, scale, alpha, color){
+    if(alpha <= 0) return;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = Math.max(.65, scale * .85);
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(180,225,255,.55)';
+    ctx.shadowBlur = 4 * scale;
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(12 * scale, 1.5 * scale);
+    ctx.stroke();
+
+    for(let i = 0; i < 7; i++){
+      const ray = -1.45 + i * .48;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(ray + Math.PI) * 7 * scale, Math.sin(ray + Math.PI) * 7 * scale);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(12 * scale, 1.5 * scale, 1.1 * scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawDandelion(ctx, scene, progress, width, height){
+    const appear = easeOut(progress / .12);
+    const fade = 1 - clamp01((progress - .72) / .24);
+    const headAlpha = appear * fade;
+    const sway = Math.sin(progress * Math.PI) * 7;
+    const cx = scene.centerX + sway;
+    const cy = scene.centerY;
+
+    ctx.save();
+    ctx.globalAlpha = headAlpha * .78;
+    ctx.strokeStyle = '#eaf7ff';
+    ctx.lineWidth = Math.max(1.2, scene.radius * .018);
+    ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(160,220,255,.42)';
+    ctx.shadowBlur = 7;
+    ctx.beginPath();
+    ctx.moveTo(width * .055, height * .94);
+    ctx.bezierCurveTo(width * .07, height * .76, cx - scene.radius * .24, cy + scene.radius * 1.5, cx, cy + scene.radius * .15);
+    ctx.stroke();
+    ctx.restore();
+
+    const bloomAlpha = appear * (1 - clamp01((progress - .20) / .30));
+    if(bloomAlpha > 0){
+      const fluffRandom = seededRandom(731);
+      ctx.save();
+      ctx.globalAlpha = bloomAlpha * .72;
+      ctx.strokeStyle = '#f7fbff';
+      ctx.fillStyle = '#fffaf0';
+      ctx.lineWidth = Math.max(.55, scene.radius * .009);
+      ctx.lineCap = 'round';
+      ctx.shadowColor = 'rgba(184,228,255,.62)';
+      ctx.shadowBlur = 5;
+      for(let i = 0; i < 64; i++){
+        const angle = (i / 64) * Math.PI * 2 + (fluffRandom() - .5) * .08;
+        const inner = scene.radius * (.12 + fluffRandom() * .12);
+        const outer = scene.radius * (.72 + fluffRandom() * .25);
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(angle) * inner, cy + Math.sin(angle) * inner);
+        ctx.lineTo(cx + Math.cos(angle) * outer, cy + Math.sin(angle) * outer);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx + Math.cos(angle) * outer, cy + Math.sin(angle) * outer, 1.05, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = bloomAlpha * .9;
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(3, scene.radius * .055), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    scene.seeds.forEach(seed => {
+      if(progress < seed.release){
+        const alpha = headAlpha * clamp01((seed.release - progress) / .08 + .25);
+        drawDandelionSeed(
+          ctx,
+          seed.anchorX + sway,
+          seed.anchorY,
+          seed.angle,
+          seed.scale * .72,
+          alpha,
+          seed.color
+        );
+        return;
+      }
+
+      const flight = clamp01((progress - seed.release) / seed.travel);
+      const travel = easeOut(flight);
+      const x = seed.anchorX + sway * (1 - flight) + seed.distance * travel;
+      const y = seed.anchorY + seed.lift * travel + Math.sin(seed.phase + flight * Math.PI * seed.frequency) * seed.wave * Math.sin(flight * Math.PI);
+      const angle = seed.angle * .25 + seed.spin * flight + Math.sin(seed.phase + flight * 8) * .22;
+      const alpha = appear * (1 - clamp01((flight - .76) / .24));
+      drawDandelionSeed(ctx, x, y, angle, seed.scale, alpha, seed.color);
+    });
+  }
+
+  function clearTransitionShells(){
+    [styleOne, styleTwo].forEach(shell => {
+      shell.classList.remove('is-transition-source', 'is-transition-target', 'is-waiting-entry');
+      shell.style.removeProperty('--wipe');
+      shell.style.removeProperty('clip-path');
+      shell.style.removeProperty('-webkit-clip-path');
+    });
+  }
+
+  function finishTransition({ replay = false } = {}){
+    if(!transitionState) return;
+    const targetStyle = transitionState.targetStyle;
+    cancelAnimationFrame(transitionFrame);
+    transitionFrame = 0;
+    clearTransitionShells();
+    applyPageStyle(targetStyle);
+    if(replay) replayThemeEntrance(targetStyle === 2 ? styleTwo : styleOne);
+    setTransitionBusy(false);
+    if(transitionContext && transitionCanvas){
+      transitionContext.clearRect(0, 0, transitionCanvas.width, transitionCanvas.height);
+    }
+    transitionState = null;
+    scrollTo({ top:0, behavior:'auto' });
+  }
+
+  function prepareDandelionTransition(){
+    const size = resizeTransitionCanvas();
+    if(!size || !transitionContext) return null;
+    scrollTo({ top:0, behavior:'auto' });
+    styleOne.hidden = false;
+    styleOne.setAttribute('aria-hidden', 'true');
+    styleOne.inert = true;
+    styleOne.classList.add('is-transition-target', 'is-waiting-entry');
+    styleTwo.classList.add('is-transition-source');
+    styleTwo.style.setProperty('--wipe', '-14%');
+    setTransitionBusy(true, 'canvas');
+    return {
+      kind:'canvas',
+      targetStyle:1,
+      source:styleTwo,
+      target:styleOne,
+      scene:makeDandelion(size.width, size.height),
+      width:size.width,
+      height:size.height,
+      entranceTriggered:false,
+      start:performance.now()
+    };
+  }
+
+  function playDandelionTransition(){
+    transitionState = prepareDandelionTransition();
+    if(!transitionState){
+      commitPageStyle(1);
+      return;
+    }
+
+    const tick = now => {
+      if(!transitionState) return;
+      try{
+        const state = transitionState;
+        const progress = clamp01((now - state.start) / 1600);
+        const wipe = easeInOut((progress - .25) / .625);
+        transitionContext.clearRect(0, 0, state.width, state.height);
+
+        const dimIn = easeOut(progress / .12);
+        const dimOut = 1 - clamp01((progress - .18) / .58);
+        const dim = .24 * Math.min(dimIn, dimOut);
+        if(dim > 0){
+          transitionContext.fillStyle = `rgba(2,8,23,${dim})`;
+          transitionContext.fillRect(0, 0, state.width, state.height);
+        }
+
+        if(supportsSoftMask){
+          state.source.style.setProperty('--wipe', (-14 + wipe * 114).toFixed(2) + '%');
+        }else{
+          const inset = (wipe * 100).toFixed(2) + '%';
+          state.source.style.clipPath = `inset(0 0 0 ${inset})`;
+          state.source.style.webkitClipPath = `inset(0 0 0 ${inset})`;
+        }
+
+        drawDandelion(transitionContext, state.scene, progress, state.width, state.height);
+
+        if(progress >= .656 && !state.entranceTriggered){
+          state.entranceTriggered = true;
+          state.target.classList.remove('is-waiting-entry');
+          replayThemeEntrance(state.target);
+        }
+
+        if(progress < 1){
+          transitionFrame = requestAnimationFrame(tick);
+        }else{
+          finishTransition({ replay:!state.entranceTriggered });
+        }
+      }catch(_){
+        finishTransition({ replay:true });
+      }
+    };
+    transitionFrame = requestAnimationFrame(tick);
+  }
+
+
+  /* ---------- 风格切换入口 ----------
+   * day → night（style 2）使用 Three.js 书页遮挡转场；
+   * night → day（style 1）仍走蒲公英过场。
+   */
+  function transitionToStyle(style){
+    if(transitionState || paperTransition.running) return;
+    const currentStyle = document.body.classList.contains('is-night') ? 2 : 1;
+    if(style === currentStyle) return;
+    if(style === 2){
+      setTransitionBusy(true, 'paper');
+      document.body.classList.add('is-paper-switch');
+      [styleOne, styleTwo].forEach(shell => {
+        clearTimeout(entranceTimers.get(shell));
+        shell.classList.remove('is-entering');
+      });
+      paperTransition.play({
+        onCovered: () => {
+          styleTwo.classList.add('paper-revealed');
+          applyPageStyle(style);
+          scrollTo({ top:0, behavior:'instant' });
+        },
+        onComplete: () => {
+          setTransitionBusy(false);
+          document.body.classList.remove('is-paper-switch');
+        }
+      });
+      return;
+    }
+    if(style === 1 && !reduce){
+      playDandelionTransition();
+      return;
+    }
+    commitPageStyle(style);
+  }
+
+  if(styleSwitch){
+    styleSwitch.addEventListener('click', () => {
+      transitionToStyle(document.body.classList.contains('is-night') ? 1 : 2);
+    });
+  }
+
+  // 按约定：每次刷新固定回到第一套风格。
+  commitPageStyle(1);
+
+
+  document.addEventListener('visibilitychange', () => {
+    styleOne.classList.toggle('is-paused', document.hidden);
+    styleTwo.classList.toggle('is-paused', document.hidden);
+    if(document.hidden && transitionState) finishTransition({ replay:true });
+  });
+
+  window.addEventListener('resize', () => {
+    if(transitionState) finishTransition({ replay:true });
+  });
+
+  /* ---------- 第二风格内部导航 ---------- */
+  const nightTabs = Array.from(document.querySelectorAll('.night-tab'));
+  const nightViews = Array.from(document.querySelectorAll('.night-view'));
+
+  function activateNight(index, { focus = false } = {}){
+    const tab = nightTabs[index];
+    if(!tab) return;
+
+    nightTabs.forEach((item, i) => {
+      const on = i === index;
+      item.setAttribute('aria-selected', String(on));
+      item.tabIndex = on ? 0 : -1;
+    });
+    nightViews.forEach((view, i) => {
+      const on = i === index;
+      view.classList.toggle('is-active', on);
+      view.hidden = !on;
+    });
+
+    if(focus) tab.focus();
+  }
+
+  nightTabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => activateNight(i));
+    tab.addEventListener('keydown', e => {
+      const map = { ArrowRight:i + 1, ArrowLeft:i - 1, Home:0, End:nightTabs.length - 1 };
+      if(!(e.key in map)) return;
+      e.preventDefault();
+      activateNight((map[e.key] + nightTabs.length) % nightTabs.length, { focus:true });
     });
   });
 
